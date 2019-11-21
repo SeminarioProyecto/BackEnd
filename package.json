@@ -1,0 +1,22 @@
+{
+  "name": "currencyapi",
+  "version": "1.0.0",
+  "description": "API de conversion de divisas",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeminarioProyecto/BackEnd.git"
+  },
+  "author": "Christopher Fiallos y Eduardo Calix",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SeminarioProyecto/BackEnd/issues"
+  },
+  "homepage": "https://github.com/SeminarioProyecto/BackEnd#readme",
+  "dependencies": {
+    "nodemon": "^2.0.0"
+  }
+}
