@@ -4,7 +4,7 @@
   "description": "API de conversion de divisas",
   "main": "index.js",
   "scripts": {
-    "test": "start"
+    "start": "nodemon ./index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/SeminarioProyecto/BackEnd#readme",
   "dependencies": {
-    "nodemon": "^2.0.0"
+    "express": "^4.17.1",
+    "mongoose": "^5.7.12",
+    "multer": "^1.4.2",
+    "nodemon": "^2.0.0",
+    "shortid": "^2.2.15"
   }
 }
