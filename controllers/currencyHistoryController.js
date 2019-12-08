@@ -4,40 +4,39 @@ const Currency = require("../models/Currency");
 const CurrencyHistory = require("../models/CurrencyHistory");
 
 exports.agregarHistorico = async (req, res, next) => {
-    const currency = await Currency.find({});
-  
-    const date = await CurrencyHistory.findOne({
-        date: currency[0].date
-    })
-    
-    if(date === null){
-       currency.forEach(function (moneda, i) {
-           agregarHistorico(moneda);
-       });
-    }else{
-        const today = new Date();
+    try {
+        const currency = await Currency.find({});
 
-        const dateComparison = date.date.toString();
+        const date = await CurrencyHistory.findOne({
+            date: currency[0].date
+        })
 
-        if (dateComparison.substring(4, 15) != today.toString().substring(4, 15)) {
-            //Esta parte aun no esta funcional
+        if (date === null) {
             currency.forEach(function (moneda, i) {
-                //console.log(moneda);
                 agregarHistorico(moneda);
-
             });
         } else {
-            console.log(dateComparison.substring(4, 15));
-            console.log(today.toString().substring(4, 15));
+            const today = new Date();
+
+            const dateComparison = date.date.toString();
+
+            if (dateComparison.substring(4, 15) != today.toString().substring(4, 15)) {
+                currency.forEach(function (moneda, i) {
+                    agregarHistorico(moneda);
+                });
+            }
+            res.status(200).send({
+                status: "okay"
+            });
         }
+    } catch (error) {
+        res
+            .status(422)
+            .send({ mensaje: 'Error al ingresar los historicos de moneda' });
     }
-    
-    res.status(200).send({status: "okay"});
-    
 };
 
 async function agregarHistorico(moneda) {
-
     var currencyHistory = new CurrencyHistory();
     currencyHistory.currencyCode = moneda.codigoMoneda;
     currencyHistory.rate = moneda.rate;
