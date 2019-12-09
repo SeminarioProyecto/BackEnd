@@ -8,7 +8,7 @@ const CurrencySchema = new Schema({
         required: true
     },
     nombreMoneda: {
-        type: Number,
+        type: String,
         trim: true,
         required: true
     },
@@ -19,12 +19,10 @@ const CurrencySchema = new Schema({
         required: true
     },
     rate: {
-        type: Number,
-        required: true
+        type: Number
     },
     date: {
-        type: Date,
-        required: true
+        type: Date
     },
     image: {
         type: String

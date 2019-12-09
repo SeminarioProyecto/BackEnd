@@ -1,16 +1,49 @@
-const fixer = require("fixer-api");
-// const multer = require("multer");
-// const shortid = require("shortid");
 const Currency = require("../models/Currency");
+const multer = require("multer");
+const shortid = require("shortid");
+const fixer = require("fixer-api");
+
+const configuracionMulter = {
+    storage: (fileStorage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, __dirname + "../../uploads");
+        },
+        filename: (req, file, cb) => {
+            const extension = file.mimetype.split("/")[1];
+            cb(null, `${shortid.generate()}.${extension}`);
+        }
+    })),
+    fileFilter(req, file, cb) {
+        if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+            cb(null, true);
+        } else {
+            cb(new Error("Formato de imagen no válido"));
+        }
+    }
+};
+
+const upload = multer(configuracionMulter).single("imagen");
+
+exports.uploadFile = (req, res, next) => {
+    upload(req, res, function (error) {
+        console.log(error);
+        if (error) {
+            res.status(422).send({
+                error
+            });
+        }
+        return next();
+    });
+};
 
 // Agregar una nueva moneda
 exports.nuevaMoneda = async (req, res, next) => {
     const currency = new Currency(req.body);
 
     try {
-        // if (req.file.filename) {
-        //     currency.image = req.file.filename;
-        // }
+        if (req.file) {
+            currency.image = req.file.filename;
+        }
 
         await currency.save();
 
@@ -19,8 +52,6 @@ exports.nuevaMoneda = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log(error);
-
         res
             .status(422)
             .send({
@@ -28,36 +59,6 @@ exports.nuevaMoneda = async (req, res, next) => {
             });
     }
 };
-
-// const configuracionMulter = {
-//     storage: (fileStorage = multer.diskStorage({
-//         destination: (req, file, cb) => {
-//             cb(null, __dirname + "../../uploads");
-//         },
-//         filename: (req, file, cb) => {
-//             const extension = file.mimetype.split("/")[1];
-//             cb(null, `${shortid.generate()}.${extension}`);
-//         }
-//     })),
-//     fileFilter(req, file, cb) {
-//         if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-//             cb(null, true);
-//         } else {
-//             cb(new Error("Formato de imagen no válido"));
-//         }
-//     }
-// };
-
-// const upload = multer(configuracionMulter).single("imagen");
-
-// exports.uploadFile = (req, res, next) => {
-//   upload(req, res, function(error) {
-//     if (error) {
-//       res.status(422).send({ error });
-//     }
-//     return next();
-//   });
-// };
 
 // Actualizar valores de las monedas
 exports.actualizarMoneda = async (req, res, next) => {
@@ -107,7 +108,7 @@ exports.actualizarMoneda = async (req, res, next) => {
 exports.mostrarMonedas = async (req, res, next) => {
     try {
         const currencies = await Currency.find({});
-        res.status(200).send(currencies);
+        res.status(200).send({ result: currencies });
     } catch (error) {
         res
             .status(422)
@@ -130,7 +131,7 @@ exports.mostrarMoneda = async (req, res, next) => {
             });
         }
 
-        res.status(200).send(currency);
+        res.status(200).send({ result: currency });
     } catch (error) {
         res
             .status(422)

@@ -9,11 +9,13 @@ module.exports = function () {
     router.get("/currencies", currencyController.mostrarMonedas);
 
     // Mostrar una moneda
-    router.get("/currency/:codigoMoneda", currencyController.mostrarMoneda)
+    router.get("/currency/:codigoMoneda", currencyController.mostrarMoneda);
 
     // Agregar nueva moneda
     router.post(
-        "/newCurrency", currencyController.nuevaMoneda);
+        "/newCurrency",
+        currencyController.uploadFile,
+        currencyController.nuevaMoneda);
 
     // Actualizar a los valores actuales de las monedas 
     router.put("/updateCurrency", currencyController.actualizarMoneda);
