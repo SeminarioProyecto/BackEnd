@@ -1,4 +1,6 @@
 const fixer = require("fixer-api");
+// const multer = require("multer");
+// const shortid = require("shortid");
 const Currency = require("../models/Currency");
 
 // Agregar una nueva moneda
@@ -6,6 +8,10 @@ exports.nuevaMoneda = async (req, res, next) => {
     const currency = new Currency(req.body);
 
     try {
+        // if (req.file.filename) {
+        //     currency.image = req.file.filename;
+        // }
+
         await currency.save();
 
         res.send({
@@ -23,18 +29,46 @@ exports.nuevaMoneda = async (req, res, next) => {
     }
 };
 
+// const configuracionMulter = {
+//     storage: (fileStorage = multer.diskStorage({
+//         destination: (req, file, cb) => {
+//             cb(null, __dirname + "../../uploads");
+//         },
+//         filename: (req, file, cb) => {
+//             const extension = file.mimetype.split("/")[1];
+//             cb(null, `${shortid.generate()}.${extension}`);
+//         }
+//     })),
+//     fileFilter(req, file, cb) {
+//         if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+//             cb(null, true);
+//         } else {
+//             cb(new Error("Formato de imagen no válido"));
+//         }
+//     }
+// };
+
+// const upload = multer(configuracionMulter).single("imagen");
+
+// exports.uploadFile = (req, res, next) => {
+//   upload(req, res, function(error) {
+//     if (error) {
+//       res.status(422).send({ error });
+//     }
+//     return next();
+//   });
+// };
+
 // Actualizar valores de las monedas
 exports.actualizarMoneda = async (req, res, next) => {
     try {
         const currency = await Currency.findOne();
-        const currencyHistory = new CurrencyHistory();
 
         var today = new Date();
 
         const dbDate = currency.date.toString();
 
         if (dbDate.substring(4, 15) != today.toString().substring(4, 15)) {
-            console.log('Es falso');
             // Pedir valores de las monedas a fixer-api
             const data = await fixer.latest({
                 access_key: "1ccb521b4032264a18661981c468aea2",
@@ -51,8 +85,9 @@ exports.actualizarMoneda = async (req, res, next) => {
                     rate: rate[moneda],
                     date: today
                 });
-
-                console.log(currencyUpdate);
+                res
+                    .status(200)
+                    .send({ mensaje: currencyUpdate });
             };
 
             codigoMoneda.forEach(moneda => {

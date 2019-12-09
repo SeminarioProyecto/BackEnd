@@ -25,10 +25,10 @@ const CurrencySchema = new Schema({
     date: {
         type: Date,
         required: true
+    },
+    image: {
+        type: String
     }
-    // image: {
-    //     type: String
-    // }
 });
 
 module.exports = mongoose.model("Currency", CurrencySchema);

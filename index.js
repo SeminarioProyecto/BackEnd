@@ -16,7 +16,7 @@ mongoose.connect(mongoUri, {
     useFindAndModify: false
 });
 mongoose.connection.on("connected", () => {
-    console.log("conected to mongo cluster.");
+    console.log("Connected to MongoDB.");
 });
 mongoose.connection.on("error", err => {
     console.log("Error while connecting to mongo.", err);

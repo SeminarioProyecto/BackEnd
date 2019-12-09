@@ -1,5 +1,3 @@
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 const Currency = require("../models/Currency");
 const CurrencyHistory = require("../models/CurrencyHistory");
 
@@ -24,12 +22,10 @@ exports.agregarHistorico = async (req, res, next) => {
                 currency.forEach(function (moneda, i) {
                     agregarHistorico(moneda);
                 });
+                res.status(200).send({ mensaje: 'done' });
             }
-            res.status(200).send({
-                status: "okay"
-            });
         }
-    } catch (error) {
+    } catch (error) {        
         res
             .status(422)
             .send({ mensaje: 'Error al ingresar los historicos de moneda' });
