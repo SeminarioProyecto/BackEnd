@@ -108,7 +108,7 @@ exports.actualizarMoneda = async (req, res, next) => {
 exports.mostrarMonedas = async (req, res, next) => {
     try {
         const currencies = await Currency.find({});
-        res.status(200).send(currencies);
+        res.status(200).send({ result: currencies });
     } catch (error) {
         res
             .status(422)
@@ -131,7 +131,7 @@ exports.mostrarMoneda = async (req, res, next) => {
             });
         }
 
-        res.status(200).send(currency);
+        res.status(200).send({ result: currency });
     } catch (error) {
         res
             .status(422)

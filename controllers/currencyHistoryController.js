@@ -48,7 +48,7 @@ exports.mostrarHistoricoMonedas = async (req, res, next) => {
 
         const currencyHistory = await CurrencyHistory.find({});
 
-        res.status(200).send(currencyHistory);
+        res.status(200).send({ result: currencyHistory });
     } catch (error) {
         res
             .status(422)
@@ -64,7 +64,7 @@ exports.mostrarHistoricoMoneda = async (req, res, next) => {
             currencyCode: req.params.currencyCode
         });
 
-        res.status(200).send(currencyHistory);
+        res.status(200).send({ result: currencyHistory });
     } catch (error) {
         res
             .status(422)
