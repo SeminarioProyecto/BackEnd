@@ -26,7 +26,6 @@ const upload = multer(configuracionMulter).single("imagen");
 
 exports.uploadFile = (req, res, next) => {
     upload(req, res, function (error) {
-        console.log(error);
         if (error) {
             res.status(422).send({
                 error
@@ -35,6 +34,10 @@ exports.uploadFile = (req, res, next) => {
         return next();
     });
 };
+
+exports.hola = (req, res, next) => {
+    res.send({ mensaje: 'Bienvenido' });
+}
 
 // Agregar una nueva moneda
 exports.nuevaMoneda = async (req, res, next) => {
