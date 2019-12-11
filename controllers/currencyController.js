@@ -206,9 +206,16 @@ exports.convertirMoneda = async (req, res, next) => {
 
         const conversion = (currencyDestination[0].rate / currencyOrigin[0].rate) * datosConversion.cantidad;
 
-        res.status(200).send({
-            resultado: conversion.toFixed(4).toString(), symbol: currencyDestination[0].symbol
-        });
+        res.status(200).send( 
+            { result: 
+                [
+                    {
+                        resultado: conversion.toFixed(4).toString(), 
+                        symbol: currencyDestination[0].symbol
+                    }
+                ]
+            }
+        );
     } catch (error) {
         res
             .status(422)
