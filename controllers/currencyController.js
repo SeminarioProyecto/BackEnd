@@ -35,10 +35,6 @@ exports.uploadFile = (req, res, next) => {
     });
 };
 
-exports.hola = (req, res, next) => {
-    res.send({ mensaje: 'Bienvenido' });
-}
-
 // Agregar una nueva moneda
 exports.nuevaMoneda = async (req, res, next) => {
     const currency = new Currency(req.body);
@@ -64,7 +60,7 @@ exports.nuevaMoneda = async (req, res, next) => {
 };
 
 // Actualizar valores de las monedas
-exports.actualizarMoneda = async (req, res, next) => {
+exports.actualizarMonedas = async (req, res, next) => {
     try {
         const currency = await Currency.findOne();
 
@@ -106,6 +102,36 @@ exports.actualizarMoneda = async (req, res, next) => {
             });
     }
 };
+
+exports.actualizarMoneda = async (req, res, next) => {
+    try {
+        let nuevaMoneda = req.body;
+
+        if (req.file) {
+            nuevaMoneda.image = req.file.filename;
+        } else {
+            const monedaAnterior = await Currency.findOne({ codigoMoneda: req.params.codigoMoneda});
+            nuevaMoneda.image = monedaAnterior.image;
+        }
+
+        const user = await Currency.findOneAndUpdate({
+                codigoMoneda: req.params.codigoMoneda
+            },
+            nuevaMoneda, 
+            { new: true }
+        );
+
+        res.status(200).send(user);
+    } catch (error) {
+        console.log(error);
+
+        res
+            .status(422)
+            .send({
+                mensaje: 'Error al actualizar la moneda'
+            });
+    }
+}
 
 // Mostrar todas las monedas
 exports.mostrarMonedas = async (req, res, next) => {
@@ -166,9 +192,9 @@ exports.eliminarMoneda = async (req, res, next) => {
 exports.convertirMoneda = async (req, res, next) => {
     try {
         const datosConversion = {
-            monedaOrigen: req.body.monedaOrigen,
-            monedaDestino: req.body.monedaDestino,
-            cantidad: req.body.cantidad
+            monedaOrigen: req.params.monedaOrigen,
+            monedaDestino: req.params.monedaDestino,
+            cantidad: req.params.cantidad
         };
 
         const currencyOrigin = await Currency.find({
@@ -180,7 +206,9 @@ exports.convertirMoneda = async (req, res, next) => {
 
         const conversion = (currencyDestination[0].rate / currencyOrigin[0].rate) * datosConversion.cantidad;
 
-        res.status(200).send(conversion.toString());
+        res.status(200).send({
+            resultado: conversion.toFixed(4).toString(), symbol: currencyDestination[0].symbol
+        });
     } catch (error) {
         res
             .status(422)
