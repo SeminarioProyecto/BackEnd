@@ -19,10 +19,16 @@ const CurrencySchema = new Schema({
         required: true
     },
     rate: {
-        type: Number
+        type: Number,
+        required: true
     },
     date: {
-        type: Date
+        type: Date,
+        required: true
+    },
+    symbol: {
+        type: String,
+        required: true
     },
     image: {
         type: String

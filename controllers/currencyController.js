@@ -26,7 +26,6 @@ const upload = multer(configuracionMulter).single("imagen");
 
 exports.uploadFile = (req, res, next) => {
     upload(req, res, function (error) {
-        console.log(error);
         if (error) {
             res.status(422).send({
                 error
@@ -61,7 +60,7 @@ exports.nuevaMoneda = async (req, res, next) => {
 };
 
 // Actualizar valores de las monedas
-exports.actualizarMoneda = async (req, res, next) => {
+exports.actualizarMonedas = async (req, res, next) => {
     try {
         const currency = await Currency.findOne();
 
@@ -103,6 +102,36 @@ exports.actualizarMoneda = async (req, res, next) => {
             });
     }
 };
+
+exports.actualizarMoneda = async (req, res, next) => {
+    try {
+        let nuevaMoneda = req.body;
+
+        if (req.file) {
+            nuevaMoneda.image = req.file.filename;
+        } else {
+            const monedaAnterior = await Currency.findOne({ codigoMoneda: req.params.codigoMoneda});
+            nuevaMoneda.image = monedaAnterior.image;
+        }
+
+        const user = await Currency.findOneAndUpdate({
+                codigoMoneda: req.params.codigoMoneda
+            },
+            nuevaMoneda, 
+            { new: true }
+        );
+
+        res.status(200).send(user);
+    } catch (error) {
+        console.log(error);
+
+        res
+            .status(422)
+            .send({
+                mensaje: 'Error al actualizar la moneda'
+            });
+    }
+}
 
 // Mostrar todas las monedas
 exports.mostrarMonedas = async (req, res, next) => {
@@ -163,9 +192,9 @@ exports.eliminarMoneda = async (req, res, next) => {
 exports.convertirMoneda = async (req, res, next) => {
     try {
         const datosConversion = {
-            monedaOrigen: req.body.monedaOrigen,
-            monedaDestino: req.body.monedaDestino,
-            cantidad: req.body.cantidad
+            monedaOrigen: req.params.monedaOrigen,
+            monedaDestino: req.params.monedaDestino,
+            cantidad: req.params.cantidad
         };
 
         const currencyOrigin = await Currency.find({
@@ -175,9 +204,16 @@ exports.convertirMoneda = async (req, res, next) => {
             codigoMoneda: datosConversion.monedaDestino
         });
 
-        const conversion = (currencyDestination[0].rate / currencyOrigin[0].rate) * datosConversion.cantidad;
-
-        res.status(200).send(conversion.toString());
+        res.status(200).send( 
+            { result: 
+                [
+                    {
+                        resultado: (currencyDestination[0].rate / currencyOrigin[0].rate) * req.params.cantidad,
+                        symbol: currencyDestination[0].symbol
+                    }
+                ]
+            }
+        );
     } catch (error) {
         res
             .status(422)
@@ -185,4 +221,40 @@ exports.convertirMoneda = async (req, res, next) => {
                 mensaje: 'Error al realizar la conversion'
             });
     }
+};
+
+function conversionTabla(monedaOrigen, monedaDestino, cantidad) {
+    conversion = (monedaDestino / monedaOrigen) * cantidad;
+
+    return conversion.toFixed(4);
+};
+
+exports.conversionesParaTabla = async (req, res, next) => {
+    const monedas = ['HNL', 'EUR', 'JPY', 'CRC', 'NIO', 'PAB', 'USD', 'SVC', 'MXN', 'GTQ'];
+
+    const cantidad = 1;
+    const resultado = [];
+
+    for (var i = 0; i < monedas.length; i++) {
+        const currencyOrigin = await Currency.find({
+            codigoMoneda: monedas[i]
+        });
+        const u = {};
+        for (var j = 0; j < monedas.length; j++) {
+            
+            const currencyDestination = await Currency.find({
+                codigoMoneda: monedas[j]
+            });
+
+            u[monedas[j]] = conversionTabla(currencyOrigin[0].rate, currencyDestination[0].rate, cantidad);
+        }
+        u[monedas[j]] = currencyOrigin[0].image;
+        resultado.push(u);
+    };
+
+    res
+        .status(200)
+        .send({
+            resultado
+        });
 };
