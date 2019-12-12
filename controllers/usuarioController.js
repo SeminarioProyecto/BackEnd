@@ -36,7 +36,7 @@ exports.uploadFile = (req, res, next) => {
 
 exports.nuevoUsuario = async (req, res, next) => {
     try {
-        const user = new Usuario(req.body);
+        const user = new Usuario(req.params);
         
         if (req.file) {
             user.image = req.file.filename;
@@ -81,13 +81,19 @@ exports.actualizarUsuario = async (req, res, next) => {
             nuevoUsuario.image = usuarioAnterior.image;
         }
 
-        const user = await Usuario.findOneAndUpdate(
-            { _id: req.params.idUsuario },
-            nuevoUsuario,
-            { new: true }
-        );
+        if (req.params) {
+            const user = await Usuario.findOneAndUpdate(
+                { _id: req.params.idUsuario },
+                nuevoUsuario,
+                { new: true }
+            );
 
-        res.status(200).send(user);
+            res.status(200).send(user);
+        } else {
+            res
+                .status(422)
+                .send({ mensaje: 'Introduzca un valor para actualizar su usuario!' });
+        }
     } catch (error) {
         res
             .status(422)

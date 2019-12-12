@@ -50,6 +50,9 @@ typings/
 # Optional npm cache directory
 .npm
 
+# imagenes
+/uploads
+
 # env variables
 /variables.env
 

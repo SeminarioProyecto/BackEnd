@@ -24,58 +24,58 @@ const UsuarioSchema = new Schema({
     }
 });
 
-UsuarioSchema.pre("save", function(next) {
-  const user = this;
+// UsuarioSchema.pre("save", function(next) {
+//   const user = this;
 
-  // Si ya se hasheo el password
-  if (!user.isModified("password")) {
-    return next();
-  }
+//   // Si ya se hasheo el password
+//   if (!user.isModified("password")) {
+//     return next();
+//   }
 
-  // Generar el salt
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) return next(err);
+//   // Generar el salt
+//   bcrypt.genSalt(10, (err, salt) => {
+//     if (err) return next(err);
 
-    bcrypt.hash(user.password, salt, (err, hash) => {
-      if (err) return next(err);
+//     bcrypt.hash(user.password, salt, (err, hash) => {
+//       if (err) return next(err);
 
-      user.password = hash;
+//       user.password = hash;
 
-      next();
-    });
-  });
-});
+//       next();
+//     });
+//   });
+// });
 
-UsuarioSchema.post("save", function (error, doc, next) {
-  if (error.name === "MongoError" && error.code === 1000) {
-    next(
-      "El correo electronico ya esta registrado en una cuenta"
-    );
-  } else {
-    next(error);
-  }
-});
+// UsuarioSchema.post("save", function (error, doc, next) {
+//   if (error.name === "MongoError" && error.code === 1000) {
+//     next(
+//       "El correo electronico ya esta registrado en una cuenta"
+//     );
+//   } else {
+//     next(error);
+//   }
+// });
 
-UsuarioSchema.methods.compararPassword = function (candidatePassword) {
-  return bcrypt.compareSync(candidatePassword, this.password);
-};
+// UsuarioSchema.methods.compararPassword = function (candidatePassword) {
+//   return bcrypt.compareSync(candidatePassword, this.password);
+// };
 
-UsuarioSchema.methods.comparePassword = function (candidatePassword) {
-  const user = this;
+// UsuarioSchema.methods.comparePassword = async function (candidatePassword) {
+//   const user = this;
 
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
-      if (err) {
-        return reject(err);
-      }
+//   return new Promise((resolve, reject) => {
+//     bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
+//       if (err) {
+//         return reject(err);
+//       }
 
-      if (!isMatch) {
-        return reject(false);
-      }
+//       if (!isMatch) {
+//         return reject(false);
+//       }
 
-      resolve(true);
-    });
-  }).catch();
-};
+//       resolve(true);
+//     });
+//   }).catch();
+// };
 
 module.exports = mongoose.model("Usuario", UsuarioSchema);

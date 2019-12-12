@@ -204,13 +204,11 @@ exports.convertirMoneda = async (req, res, next) => {
             codigoMoneda: datosConversion.monedaDestino
         });
 
-        const conversion = (currencyDestination[0].rate / currencyOrigin[0].rate) * datosConversion.cantidad;
-
         res.status(200).send( 
             { result: 
                 [
                     {
-                        resultado: conversion.toFixed(4).toString(), 
+                        resultado: (currencyDestination[0].rate / currencyOrigin[0].rate) * req.params.cantidad,
                         symbol: currencyDestination[0].symbol
                     }
                 ]
@@ -223,4 +221,40 @@ exports.convertirMoneda = async (req, res, next) => {
                 mensaje: 'Error al realizar la conversion'
             });
     }
+};
+
+function conversionTabla(monedaOrigen, monedaDestino, cantidad) {
+    conversion = (monedaDestino / monedaOrigen) * cantidad;
+
+    return conversion.toFixed(4);
+};
+
+exports.conversionesParaTabla = async (req, res, next) => {
+    const monedas = ['HNL', 'EUR', 'JPY', 'CRC', 'NIO', 'PAB', 'USD', 'SVC', 'MXN', 'GTQ'];
+
+    const cantidad = 1;
+    const resultado = [];
+
+    for (var i = 0; i < monedas.length; i++) {
+        const currencyOrigin = await Currency.find({
+            codigoMoneda: monedas[i]
+        });
+        const u = {};
+        for (var j = 0; j < monedas.length; j++) {
+            
+            const currencyDestination = await Currency.find({
+                codigoMoneda: monedas[j]
+            });
+
+            u[monedas[j]] = conversionTabla(currencyOrigin[0].rate, currencyDestination[0].rate, cantidad);
+        }
+        u[monedas[j]] = currencyOrigin[0].image;
+        resultado.push(u);
+    };
+
+    res
+        .status(200)
+        .send({
+            resultado
+        });
 };

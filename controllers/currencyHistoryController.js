@@ -44,7 +44,6 @@ async function agregarHistorico(moneda) {
 exports.mostrarHistoricoMonedas = async (req, res, next) => {
     try {
         const today = new Date();
-        console.log(today.toString().substring(4, 15));
 
         const currencyHistory = await CurrencyHistory.find({});
 
