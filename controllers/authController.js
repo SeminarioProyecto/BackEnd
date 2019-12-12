@@ -28,7 +28,6 @@ exports.verificarUsuario = async (req, res, next) => {
             });
         }
     } catch (error) {
-        console.log(error);
         res
             .status(422)
             .send({ error: 'Error al intentar iniciar sesión' });

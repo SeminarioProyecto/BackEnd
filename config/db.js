@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv").config({ path: "variables.env" })
 
 // configuración de la conexion de mongo y mongoose
+// Estas credenciales no deben estar aqui, pero por efectos de la clase, se dejo aqui.
 const mongoUri = "mongodb+srv://aguacate:aguacatito@cluster0-wnnfl.mongodb.net/currencyAPI";
 mongoose.connect(mongoUri, {
     useNewUrlParser: true,

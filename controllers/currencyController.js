@@ -123,8 +123,6 @@ exports.actualizarMoneda = async (req, res, next) => {
 
         res.status(200).send(user);
     } catch (error) {
-        console.log(error);
-
         res
             .status(422)
             .send({
