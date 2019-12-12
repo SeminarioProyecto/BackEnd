@@ -3,7 +3,9 @@ require("./config/db");
 const bodyParser = require("body-parser");
 const routes = require("./routes/index");
 
-require("dotenv").config({  })
+require("dotenv").config({
+    path: "variables.env"
+});
 
 // crear el servidor de node
 const app = express();
@@ -17,4 +19,4 @@ app.use(bodyParser.urlencoded({
 app.use("/", routes());
 
 // Escuchar en el puerto 8000
-app.listen(8000);
+app.listen(process.env.PORT);
